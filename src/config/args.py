@@ -22,14 +22,32 @@ def parse_common_arguments(parser):
     parser.add_argument("--log_level", type=int, default=os.environ.get("SM_LOG_LEVEL", 20))
     parser.add_argument("--serve_contents_type", type=str, default="movie")
     parser.add_argument("--serve_recommend_type", type=str, default="like")
-
+    # 기존 코드 아래에 추가
+    parser.add_argument("--namespace", type=str, default=None)
+    parser.add_argument("--aws_region", type=str, default="ap-northeast-2")
+    parser.add_argument("--instance_type", type=str, default="local")
+    parser.add_argument("--use_spot", type=bool, default=False)
+    parser.add_argument("--py_version", type=str, default="py38")
+    parser.add_argument("--framework_version", type=str, default="1.12")
+    parser.add_argument("--job_name", type=str, default="NoAssigned")
+    parser.add_argument("--dependency_job_name", type=str, default="NoAssigned")
+    
 
 def parse_model_arguments(parser):
     parser.add_argument("--dropout", type=float, default=0.2, help="dropout rate")
     parser.add_argument("--factor_num", type=int, default=64, help="predictive factors numbers in the model")
     parser.add_argument("--num_layers", type=int, default=3, help="number of layers in MLP model")
     parser.add_argument("--model_name", type=str, default="NCF", help="save model dir name")
-    parser.add_argument("--model_dir", type=str, default=os.path.join(get_root_dir(), "local", "model"))
+    # parser.add_argument("--model_dir", type=str, default=os.path.join(get_root_dir(), "local", "model"))
+    # 기존 argument 수정
+    parser.add_argument(
+        "--model_dir",
+        type=str,
+        default=os.environ.get(
+            "SM_MODEL_DIR", 
+            os.path.join(get_root_dir(), "local", "model")
+        )
+    )
 
 
 def parse_train_arguments(parser):
@@ -56,9 +74,26 @@ def parse_data_arguments(parser):
     parser.add_argument("--test_num_ng", type=int, default=50, help="sample part of negative items for testing")
     parser.add_argument("--top_k", type=int, default=5, help="compute metrics@top_k")
     parser.add_argument("--dataset_version", type=int, default=1)
-    parser.add_argument("--dataset_dir", type=str, default=os.path.join(get_root_dir(), "local", "input", "data"))
+    # 기존 argument 수정
+    parser.add_argument(
+        "--dataset_dir",
+        type=str,
+        default=os.environ.get(
+            "SM_INPUT_DIR", 
+            os.path.join(get_root_dir(), "local", "input", "data")
+        )
+    )
     parser.add_argument("--dataset_name", type=str, default="watch_log")
-    parser.add_argument("--output_dir", type=str, default=os.path.join(get_root_dir(), "local", "output"))
+    # 기존 argument 수정
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default=os.environ.get(
+            "SM_OUTPUT_DIR", 
+            os.path.join(get_root_dir(), "local", "output")
+        )
+    )
+
 
 
 def parse_args():
